@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Go On A Date With Me?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .heart {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .cry {
+            animation: shake 0.5s infinite;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="bg-pink-50 min-h-screen flex flex-col items-center justify-center p-4">
+    <div id="container" class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full text-center">
+        <h1 class="text-3xl font-bold text-pink-600 mb-6" id="question">Will you go on a date with me?</h1>
+        
+        <!-- No click counter -->
+        <div id="noCounter" class="text-lg text-gray-600 mb-4 hidden">
+            You've dodged my heart <span id="counterValue">0</span> times! 💔
+        </div>
+        
+        <div class="flex justify-center space-x-4 mt-8 relative">
+            <button id="yesBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105 z-10">
+                Yes <i data-feather="heart" class="inline ml-1"></i>
+            </button>
+            <button id="noBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full transition-all z-10">
+                No 😢 <i data-feather="x" class="inline ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="success" class="hidden bg-white rounded-xl shadow-2xl p-8 max-w-md w-full text-center">
+        <h1 class="text-4xl font-bold text-pink-600 mb-6 flex items-center justify-center">
+            I love you 3000! <i data-feather="heart" class="heart inline ml-2 text-red-500"></i>
+        </h1>
+        <img src="https://via.placeholder.com/320x240/ff69b4/ffffff?text=%E2%9D%A4%EF%B8%8F" alt="Heart" class="w-32 h-32 mx-auto mb-6">
+        <p class="text-lg text-gray-700">You've made me the happiest person in the world!</p>
+    </div>
+
+    <div class="mt-6 text-center">
+        <p class="text-gray-600 mb-2">Share this page:</p>
+        <input type="text" id="shareLink" value="https://example.com/date-me" class="w-full p-2 border rounded text-center bg-gray-50" readonly>
+        <button onclick="copyLink()" class="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+            Copy Link <i data-feather="copy" class="inline ml-1"></i>
+        </button>
+    </div>
+
+    <script>
+        function copyLink() {
+            const link = document.getElementById('shareLink');
+            link.select();
+            document.execCommand('copy');
+            alert('Link copied to clipboard!');
+        }
+
+        // UPDATED: Phrases array with "Please..saradi." as the first phrase
+        const phrases = [
+            "Please..saradi.",
+            "I'm a good boy, really!",
+            "Pretty please?",
+            "I'll cry otherwise...",
+            "Just one chance?",
+            "I'll be heartbroken!",
+            "You're breaking my heart!",
+            "Why are you so cruel?",
+            "I'm begging you!",
+            "This is your last chance!",
+            "Stop chasing me!",
+            "You'll never catch me!",
+            "Too slow!"
+        ];
+        
+        let currentPhrase = 0;
+        let noClickCount = 0;
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const question = document.getElementById('question');
+        const container = document.getElementById('container');
+        const success = document.getElementById('success');
+        const noCounter = document.getElementById('noCounter');
+        const counterValue = document.getElementById('counterValue');
+        
+        noBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Increment and update counter
+            noClickCount++;
+            counterValue.textContent = noClickCount;
+            noCounter.classList.remove('hidden');
+            
+            // Move button to random position when clicked
+            const maxX = window.innerWidth - noBtn.offsetWidth;
+            const maxY = window.innerHeight - noBtn.offsetHeight;
+            
+            // Make it harder to click by moving faster and further
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+            
+            noBtn.style.position = 'absolute';
+            noBtn.style.transition = 'all 0.1s ease-out';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            
+            // Make button slightly transparent when moving
+            noBtn.style.opacity = '0.7';
+            setTimeout(() => { noBtn.style.opacity = '1'; }, 200);
+            
+            // Increase movement speed with each click
+            if (currentPhrase > 3) {
+                noBtn.style.transition = 'all 0.05s ease-out';
+            }
+            if (currentPhrase > 6) {
+                noBtn.style.transition = 'all 0.03s ease-out';
+            }
+            
+            // Shake effect
+            noBtn.classList.add('animate-pulse');
+            setTimeout(() => noBtn.classList.remove('animate-pulse'), 500);
+            
+            if (currentPhrase < phrases.length) {
+                question.textContent = phrases[currentPhrase];
+                currentPhrase++;
+                
+                // Use template literal for scale transform
+                yesBtn.style.transform = `scale(${1 + (currentPhrase * 0.1)})`;
+                
+                // Add crying effect on later phrases
+                if (currentPhrase > 2) {
+                    container.classList.add('cry');
+                }
+                
+                // Make button smaller and harder to click as phrases progress
+                if (currentPhrase > 5) {
+                    noBtn.style.transform = 'scale(0.9)';
+                }
+                if (currentPhrase > 8) {
+                    noBtn.style.transform = 'scale(0.8)';
+                }
+                if (currentPhrase > 10) {
+                    noBtn.style.transform = 'scale(0.7)';
+                }
+            } else {
+                question.textContent = "You can't catch me!";
+                noBtn.style.transform = 'scale(0.6)';
+            }
+        });
+        
+        yesBtn.addEventListener('click', function() {
+            // Reset counter on Yes (hide it in success view)
+            noClickCount = 0;
+            noCounter.classList.add('hidden');
+            
+            container.classList.add('hidden');
+            success.classList.remove('hidden');
+            
+            // Confetti effect
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = ['#f00', '#0f0', '#00f', '#ff0', '#f0f'][Math.floor(Math.random() * 5)];
+                confetti.style.borderRadius = '50%';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.zIndex = '1000';
+                document.body.appendChild(confetti);
+                
+                const animation = confetti.animate([
+                    { top: '-10px', opacity: 1 },
+                    { top: '100vh', opacity: 0 }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)'
+                });
+                
+                animation.onfinish = () => confetti.remove();
+            }
+        });
+        
+        // Initialize feather icons
+        feather.replace();
+        
+        // Update share link with current URL
+        document.getElementById('shareLink').value = window.location.href;
+    </script>
+</body>
+</html>
